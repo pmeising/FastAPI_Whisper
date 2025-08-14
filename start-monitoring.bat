@@ -1,23 +1,25 @@
 @echo off
-echo 🚀 Starting Whisper API with Monitoring Stack...
+echo 🚀 Starting Whisper API...
 
-REM Build and start all services
+REM Build and start the service
 docker-compose up --build -d
 
-echo ⏳ Waiting for services to start...
-timeout /t 30 /nobreak > nul
+echo ⏳ Waiting for service to start...
+timeout /t 15 /nobreak > nul
 
-echo ✅ Services started!
+echo ✅ Whisper API started!
 echo.
-echo 📊 Access your services:
+echo 📊 Access your service:
 echo    • Whisper API: http://localhost:8000
 echo    • API Documentation: http://localhost:8000/docs
-echo    • Prometheus: http://localhost:9090
-echo    • Grafana: http://localhost:3000 (admin/grafana)
+echo    • Metrics Endpoint: http://localhost:8000/metrics
 echo.
-echo 📈 Grafana has been pre-configured with:
-echo    • Prometheus datasource
-echo    • Whisper API Performance Dashboard
+echo 📈 For monitoring, start the centralized monitoring stack:
+echo    • Navigate to: ..\Monitoring_Stack\
+echo    • Run: start-monitoring.bat
+echo    • Access Grafana: http://localhost:3000 (admin/grafana)
+echo.
+echo � The centralized monitoring will automatically discover this service.
 echo.
 echo 🔍 To view logs:
 echo    docker-compose logs -f whisper-api

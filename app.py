@@ -6,7 +6,6 @@ import tempfile
 import os
 import time
 import logging
-from datetime import datetime
 import warnings
 from prometheus_client import Counter, Histogram, Gauge, generate_latest, CONTENT_TYPE_LATEST
 from fastapi.responses import Response
