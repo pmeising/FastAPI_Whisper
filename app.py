@@ -43,7 +43,7 @@ def load_whisper_model():
     try:
         logger.info("Loading Whisper Large V3 model...")
         # Load the model and processor from Hugging Face
-        model_name = "openai/whisper-large-v3"
+        model_name = "openai/whisper-large-v3-turbo"
         processor = WhisperProcessor.from_pretrained(model_name)
         whisper_model = WhisperForConditionalGeneration.from_pretrained(
             model_name,
