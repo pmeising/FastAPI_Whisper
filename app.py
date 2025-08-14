@@ -7,6 +7,7 @@ import os
 import time
 import logging
 import warnings
+import librosa
 from prometheus_client import Counter, Histogram, Gauge, generate_latest, CONTENT_TYPE_LATEST
 from fastapi.responses import Response
 
@@ -67,16 +68,22 @@ def load_whisper_model():
 model_loaded = load_whisper_model()
 
 def load_audio_file(file_path):
-    """Load audio file using torchaudio"""
-    waveform, sample_rate = torchaudio.load(file_path)
-    # Convert to mono if stereo
-    if waveform.shape[0] > 1:
-        waveform = torch.mean(waveform, dim=0, keepdim=True)
-    # Resample to 16kHz if needed
-    if sample_rate != 16000:
-        resampler = torchaudio.transforms.Resample(sample_rate, 16000)
-        waveform = resampler(waveform)
-    return waveform.squeeze().numpy()
+    """Load audio file using torchaudio with librosa fallback"""
+    try:
+        waveform, sample_rate = torchaudio.load(file_path)
+        # Convert to mono if stereo
+        if waveform.shape[0] > 1:
+            waveform = torch.mean(waveform, dim=0, keepdim=True)
+        # Resample to 16kHz if needed
+        if sample_rate != 16000:
+            resampler = torchaudio.transforms.Resample(sample_rate, 16000)
+            waveform = resampler(waveform)
+        return waveform.squeeze().numpy()
+    except Exception as e:
+        logger.warning(f"torchaudio failed: {e}, trying librosa fallback")
+        # Fallback to librosa
+        waveform, sample_rate = librosa.load(file_path, sr=16000, mono=True)
+        return waveform
 
 @app.post("/transcribe/")
 async def transcribe(audio_file: UploadFile = File(...)):
